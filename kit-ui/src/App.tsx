@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
+// TODO how does Async ahead handle typing really fast
+// does it wait a few milliseconds after the last typed char before submitting a request?
 
-const SEARCH_URI = "https://api.github.com/search/users";
+interface Kit {
+  kit_id: number;
+  label_id: string;
+  shipping_tracking_code: string;
+}
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
-  const [options, setOptions] = useState<any[]>([]);
+  const [options, setOptions] = useState<Kit[]>([]);
+  const [selected, setSelected] = useState<Kit[]>([]);
 
   const handleSearch = (query: string) => {
     setIsLoading(true);
 
-    fetch(`${SEARCH_URI}?q=${query}+in:login&page=1&per_page=50`)
+    // TODO: fix hard coded URL for prod and expanding to other routes
+    fetch(`http://localhost:3001/api?kit_id=${query}`)
       .then((resp) => resp.json())
-      .then(({ items }: any) => {
-        setOptions(items);
+      .then(({ results }: { results: Kit[] }) => {
+        setOptions(results);
         setIsLoading(false);
       });
   };
@@ -35,38 +43,31 @@ function App() {
           <label htmlFor="kitSearchInput" className="form-label">
             Kit Identifier
           </label>
-          <input
-            type="text"
-            className="form-control"
-            id="kitSearchInput"
-            placeholder="XX-XXX-XXXX"
-          />
-        </div>
-        <div className="mb-3">
           <AsyncTypeahead
             filterBy={filterBy}
             id="async-example"
             isLoading={isLoading}
-            labelKey="login"
-            minLength={3}
+            labelKey="label_id"
+            minLength={1}
+            emptyLabel="No kits found"
             onSearch={handleSearch}
             options={options}
-            placeholder="Search for a Github user..."
+            onChange={setSelected as any} // TODO: the Kit type needs to extend typeaheads option
+            selected={selected}
+            placeholder="XX-XXX-XXXX"
             renderMenuItemChildren={(option: any) => (
               <>
-                <img
-                  alt={option.login}
-                  src={option.avatar_url}
-                  style={{
-                    height: "24px",
-                    marginRight: "10px",
-                    width: "24px",
-                  }}
-                />
-                <span>{option.login}</span>
+                <span>{option.label_id}</span>
               </>
             )}
           />
+        </div>
+        <div>
+          Unique Kit Identifier: {selected.length ? selected[0].label_id : ""}
+        </div>
+        <div>
+          FedEx tracking number:{" "}
+          {selected.length ? selected[0].shipping_tracking_code : ""}
         </div>
       </div>
     </div>

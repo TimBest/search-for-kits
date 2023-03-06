@@ -1,9 +1,12 @@
 const express = require("express");
 const db = require("better-sqlite3")("kits.db", {});
+const cors = require("cors");
 
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+// TODO: needs allow list for PROD
+app.use(cors());
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
