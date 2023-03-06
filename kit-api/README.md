@@ -31,7 +31,8 @@ sqlite> .import /Users/tim/Documents/work/biobot/search-for-kits/kit-api/data/KI
 ## Notes
 
 - authentication & authorization
-- access to all kits? limit by user_id?
+- access to all kits? limit by customer_id?
+  - only return results when there is a single result?
 - alternate lookup methods? user, date fedex number?
 - sqlite -> postgres
 - DB mgmt: ORM and migrations

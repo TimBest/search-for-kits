@@ -26,26 +26,56 @@ function App() {
       });
   };
 
+  const displayResult = () => {
+    if (selected.length < 1) {
+      return <></>;
+    }
+    return (
+      <table className="table mt-4">
+        <thead>
+          <tr>
+            <th scope="col">Unique Kit Identifier</th>
+            <th scope="col">FedEx tracking number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{selected[0].label_id}</td>
+            <td>
+              {/* TODO get the real tracking code looup link */}
+              <a
+                href={`fedex.com/status?trackingcode='${selected[0].shipping_tracking_code}'`}
+                target="_blank"
+              >
+                {selected[0].shipping_tracking_code}
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  };
+
   // Bypass client-side filtering by returning `true`. Results are already
   // filtered by the search endpoint, so no need to do it again.
   const filterBy = () => true;
   return (
     <div className="App">
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <nav className="navbar navbar-expand-lg bg-body-tertiary bg-light">
         <div className="container">
           <a className="navbar-brand" href="#">
             Search for Kits
           </a>
         </div>
       </nav>
-      <div className="container">
-        <div className="mb-3">
+      <div className="container mt-4">
+        <div>
           <label htmlFor="kitSearchInput" className="form-label">
-            Kit Identifier
+            Unique Kit Identifier
           </label>
           <AsyncTypeahead
             filterBy={filterBy}
-            id="async-example"
+            id="kitLookup"
             isLoading={isLoading}
             labelKey="label_id"
             minLength={1}
@@ -61,14 +91,12 @@ function App() {
               </>
             )}
           />
+          <div id="kitLookupHelp" className="form-text">
+            The Unique Kit Identifier can be found on the label of the kit that
+            was sent to you in the mail
+          </div>
         </div>
-        <div>
-          Unique Kit Identifier: {selected.length ? selected[0].label_id : ""}
-        </div>
-        <div>
-          FedEx tracking number:{" "}
-          {selected.length ? selected[0].shipping_tracking_code : ""}
-        </div>
+        {displayResult()}
       </div>
     </div>
   );
