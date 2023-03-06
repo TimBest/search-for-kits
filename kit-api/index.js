@@ -15,10 +15,9 @@ app.get("/api", (req, res) => {
   // TODO: return error if kit_id is too small?
   // TODO: return error if kit_id is too big?
   // TODO: return error if kit_id contains anything other than a 0->9 or "-". safe assumption?
-  // TODO: order results by kit_id
   const c = db
     .prepare(
-      `SELECT * FROM kits WHERE label_id LIKE '${req.query.kit_id}%' LIMIT 5;`
+      `SELECT * FROM kits WHERE label_id LIKE '${req.query.kit_id}%' ORDER BY label_id ASC LIMIT 5;`
     )
     .all();
   res.json({ results: c });
